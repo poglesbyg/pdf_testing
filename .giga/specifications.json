@@ -1,0 +1,22 @@
+[
+  {
+    "fileName": "main-overview.mdc",
+    "description": "Complete system overview documenting the HTSF PDF Form Processing System architecture, key components, and their interactions"
+  },
+  {
+    "fileName": "data-models-lab-submissions.mdc",
+    "description": "Detailed documentation of laboratory submission data models including sample metadata, concentration measurements, and project relationships"
+  },
+  {
+    "fileName": "pdf-parsing-algorithm.mdc",
+    "description": "Comprehensive documentation of the specialized HTSF form parsing algorithm, including extraction patterns and validation rules for laboratory data"
+  },
+  {
+    "fileName": "workflow-dataflow.mdc",
+    "description": "End-to-end data flow documentation covering the submission process from PDF parsing through database storage and tracking"
+  },
+  {
+    "fileName": "validation-rules.mdc",
+    "description": "Detailed documentation of domain-specific validation rules for DNA/RNA samples, concentration ranges, and laboratory naming conventions"
+  }
+]
