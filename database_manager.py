@@ -371,6 +371,38 @@ class SubmissionDatabase:
         self.close()
         return results
     
+    def update_submission(self, submission_id: str, updates: Dict) -> bool:
+        """Update submission metadata"""
+        self.connect()
+        cursor = self.conn.cursor()
+        
+        try:
+            # Build SET clause from updates
+            set_clauses = []
+            params = []
+            
+            for field, value in updates.items():
+                if field in ['project_id', 'owner', 'source_organism']:
+                    set_clauses.append(f"{field} = ?")
+                    params.append(value)
+            
+            if not set_clauses:
+                return False
+            
+            # Add submission_id for WHERE clause
+            params.append(submission_id)
+            
+            # Execute update
+            query = f"UPDATE submissions SET {', '.join(set_clauses)} WHERE submission_id = ?"
+            cursor.execute(query, params)
+            self.conn.commit()
+            
+            return cursor.rowcount > 0
+            
+        except Exception as e:
+            print(f"Error updating submission: {e}")
+            return False
+    
     def delete_submission(self, submission_id: str) -> bool:
         """Delete a submission and all related data"""
         self.connect()

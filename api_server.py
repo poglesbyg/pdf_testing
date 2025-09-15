@@ -42,12 +42,12 @@ db = SubmissionDatabase()
 class SubmissionResponse(BaseModel):
     """Response model for submission data"""
     submission_id: str
-    uuid: str
-    short_ref: str
-    file_hash: str
-    project_id: Optional[str]
-    owner: Optional[str]
-    source_organism: Optional[str]
+    uuid: Optional[str] = None
+    short_ref: Optional[str] = None
+    file_hash: Optional[str] = None
+    project_id: Optional[str] = None
+    owner: Optional[str] = None
+    source_organism: Optional[str] = None
     total_samples: int
     scanned_at: str
     pdf_filename: str
@@ -200,6 +200,117 @@ async def get_submission(
         raise HTTPException(status_code=404, detail=f"Submission {submission_id} not found")
     
     return submission
+
+@app.get("/api/submissions/{submission_id}/detailed", tags=["Submissions"])
+async def get_detailed_submission(
+    submission_id: str = Path(..., description="Submission ID")
+):
+    """Get comprehensive submission details including samples and all metadata"""
+    
+    # Get basic submission info
+    submission = db.get_submission(submission_id=submission_id)
+    if not submission:
+        raise HTTPException(status_code=404, detail=f"Submission {submission_id} not found")
+    
+    # Get samples
+    conn = db.conn
+    if not conn:
+        db.connect()
+        conn = db.conn
+    
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM samples 
+        WHERE submission_id = ?
+        ORDER BY id
+    """, (submission_id,))
+    
+    samples = []
+    for row in cursor.fetchall():
+        samples.append({
+            'name': row['sample_name'],
+            'volume_ul': row['volume_ul'],
+            'qubit_conc': row['qubit_conc'],
+            'nanodrop_conc': row['nanodrop_conc'],
+            'a260_280_ratio': row['a260_280_ratio'],
+            'a260_230_ratio': row['a260_230_ratio']
+        })
+    
+    # Get additional info
+    cursor.execute("""
+        SELECT key, value FROM submission_info
+        WHERE submission_id = ?
+    """, (submission_id,))
+    
+    additional_info = {}
+    for row in cursor.fetchall():
+        key = row['key']
+        value = row['value']
+        # Try to parse JSON values
+        try:
+            import json
+            additional_info[key] = json.loads(value)
+        except:
+            additional_info[key] = value
+    
+    # Combine all information
+    detailed_submission = {
+        **submission,
+        'samples': samples,
+        'sample_count': len(samples),
+        'additional_info': additional_info,
+        'submission_ids': {
+            'submission_id': submission.get('submission_id'),
+            'uuid': submission.get('uuid'),
+            'short_ref': submission.get('short_ref'),
+            'file_hash': submission.get('file_hash')
+        }
+    }
+    
+    return detailed_submission
+
+class UpdateSubmissionRequest(BaseModel):
+    """Request model for updating submission data"""
+    project_id: Optional[str] = None
+    owner: Optional[str] = None
+    source_organism: Optional[str] = None
+    
+@app.put("/api/submissions/{submission_id}", response_model=dict, tags=["Submissions"])
+async def update_submission(
+    submission_id: str = Path(..., description="Submission ID"),
+    update_data: UpdateSubmissionRequest = Body(...)
+):
+    """
+    Update submission metadata
+    """
+    # Check if submission exists
+    existing = db.get_submission(submission_id=submission_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    
+    # Prepare update dictionary
+    update_dict = {}
+    if update_data.project_id is not None:
+        update_dict['project_id'] = update_data.project_id
+    if update_data.owner is not None:
+        update_dict['owner'] = update_data.owner
+    if update_data.source_organism is not None:
+        update_dict['source_organism'] = update_data.source_organism
+    
+    if not update_dict:
+        return {"message": "No updates provided", "success": False}
+    
+    success = db.update_submission(submission_id, update_dict)
+    
+    if success:
+        return {
+            "message": "Submission updated successfully",
+            "success": True,
+            "submission_id": submission_id,
+            "updated_fields": list(update_dict.keys())
+        }
+    else:
+        return {"message": "Update failed", "success": False}
 
 @app.delete("/api/submissions/{submission_id}", tags=["Submissions"])
 async def delete_submission(
