@@ -232,6 +232,12 @@
                         </div>
                         
                         <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" id="edit-location" 
+                                   placeholder="e.g., Building/Room number, Lab name">
+                        </div>
+                        
+                        <div class="mb-3">
                             <label class="form-label">Total Samples</label>
                             <input type="text" class="form-control" id="edit-total-samples" readonly>
                         </div>
@@ -247,7 +253,7 @@
                         </div>
                         
                         <div class="alert alert-info mt-3">
-                            <small><strong>Note:</strong> Only Project ID, Owner, and Source Organism can be edited. 
+                            <small><strong>Note:</strong> Only Project ID, Owner, Source Organism, and Location can be edited. 
                             To modify sample data or other fields, please upload a new PDF.</small>
                         </div>
                     </form>
@@ -355,6 +361,7 @@
                     document.getElementById('edit-project-id').value = submission.project_id || '';
                     document.getElementById('edit-owner').value = submission.owner || '';
                     document.getElementById('edit-source-organism').value = submission.source_organism || '';
+                    document.getElementById('edit-location').value = submission.location || '';
                     document.getElementById('edit-total-samples').value = submission.total_samples;
                     document.getElementById('edit-scanned-at').value = new Date(submission.scanned_at).toLocaleString();
                     document.getElementById('edit-pdf-filename').value = submission.pdf_filename;
@@ -375,7 +382,8 @@
             const updateData = {
                 project_id: document.getElementById('edit-project-id').value || null,
                 owner: document.getElementById('edit-owner').value || null,
-                source_organism: document.getElementById('edit-source-organism').value || null
+                source_organism: document.getElementById('edit-source-organism').value || null,
+                location: document.getElementById('edit-location').value || null
             };
             
             try {
@@ -572,6 +580,7 @@
                                     <tr><th>Project ID:</th><td>${submission.project_id || 'N/A'}</td></tr>
                                     <tr><th>Owner:</th><td>${submission.owner || 'N/A'}</td></tr>
                                     <tr><th>Source Organism:</th><td>${submission.source_organism || 'N/A'}</td></tr>
+                                    <tr><th>Location:</th><td>${submission.location || 'N/A'}</td></tr>
                                     <tr><th>Sequencing Type:</th><td>${submission.sequencing_type || 'N/A'}</td></tr>
                                     <tr><th>Sample Type:</th><td>${submission.sample_type || 'N/A'}</td></tr>
                                     <tr><th>Total Samples:</th><td><span class="badge bg-info">${submission.sample_count || submission.total_samples}</span></td></tr>

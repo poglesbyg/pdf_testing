@@ -52,6 +52,7 @@ class SubmissionDatabase:
                 project_id TEXT,
                 owner TEXT,
                 source_organism TEXT,
+                location TEXT,
                 sequencing_type TEXT,
                 sample_type TEXT,
                 total_samples INTEGER,
@@ -114,6 +115,14 @@ class SubmissionDatabase:
         """)
         
         self.conn.commit()
+        
+        # Add migration for location field if it doesn't exist
+        cursor.execute("PRAGMA table_info(submissions)")
+        columns = [col[1] for col in cursor.fetchall()]
+        if 'location' not in columns:
+            cursor.execute("ALTER TABLE submissions ADD COLUMN location TEXT")
+            self.conn.commit()
+        
         self.close()
     
     def save_submission(self, data: Dict) -> bool:
@@ -382,7 +391,7 @@ class SubmissionDatabase:
             params = []
             
             for field, value in updates.items():
-                if field in ['project_id', 'owner', 'source_organism']:
+                if field in ['project_id', 'owner', 'source_organism', 'location']:
                     set_clauses.append(f"{field} = ?")
                     params.append(value)
             

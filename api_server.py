@@ -48,6 +48,7 @@ class SubmissionResponse(BaseModel):
     project_id: Optional[str] = None
     owner: Optional[str] = None
     source_organism: Optional[str] = None
+    location: Optional[str] = None
     total_samples: int
     scanned_at: str
     pdf_filename: str
@@ -274,6 +275,7 @@ class UpdateSubmissionRequest(BaseModel):
     project_id: Optional[str] = None
     owner: Optional[str] = None
     source_organism: Optional[str] = None
+    location: Optional[str] = None
     
 @app.put("/api/submissions/{submission_id}", response_model=dict, tags=["Submissions"])
 async def update_submission(
@@ -296,6 +298,8 @@ async def update_submission(
         update_dict['owner'] = update_data.owner
     if update_data.source_organism is not None:
         update_dict['source_organism'] = update_data.source_organism
+    if update_data.location is not None:
+        update_dict['location'] = update_data.location
     
     if not update_dict:
         return {"message": "No updates provided", "success": False}
