@@ -52,8 +52,7 @@ spec:
           periodSeconds: 5
       volumes:
       - name: data-volume
-        persistentVolumeClaim:
-          claimName: pdf-tracker-pvc
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -71,14 +70,3 @@ spec:
     targetPort: 8000
     protocol: TCP
   type: ClusterIP
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pdf-tracker-pvc
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
