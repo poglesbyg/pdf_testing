@@ -1,55 +1,59 @@
 ---
-description: Documentation of laboratory submission data models and workflows for managing genomic sequencing submissions
+description: Specification for lab submission data models including sample metadata, concentration measurements, and project relationships
 ---
 
 
 # data-models-lab-submissions
 
-Laboratory submission data models define the core structure for handling genomic sequencing requests and sample tracking.
+## Core Data Models
 
-Key Data Models:
-
-1. Sample Submission Model
-- Project identifier (HTSF--XX-###)
-- Sample concentrations (ng/µL)
-- A260/280 purity ratios
-- Volume measurements
-- Sample type classification
+### Sample Submission Model
 Importance Score: 95/100
 
-2. Project Metadata Model
-- Sequencing type (Ligation/Rapid/Barcoding)
-- Sample type (gDNA/Fragmented DNA/PCR/cDNA)
-- Organism/tissue information
-- Project relationships
+- Sample metadata tracking:
+  - Concentration measurements (ng/µL) with validation ranges 112.70-468.75
+  - Quality ratios (A260/280)
+  - Volume requirements
+  - Project identifiers in HTSF--XX-XXX format
+
+### Project Relationship Model 
 Importance Score: 85/100
 
-3. Laboratory Measurement Model
-- Nanodrop concentration readings
-- Statistical aggregates per submission
-- Quality control thresholds
-- Volume tracking
+- Links submissions to projects:
+  - Unique submission ID generation (HTSFJL147_20250910_113759)
+  - Project code validation
+  - Sample batch associations
+  - Cross-project sample tracking
+
+### Quality Control Model
 Importance Score: 80/100
 
-Data Validation Rules:
-- Sample concentrations must fall within sequencing-type specific ranges
-- Project IDs follow strict HTSF naming convention
-- Required metadata fields vary by sample type
-- Duplicate submissions prevented via file hashing
-- Sample measurements must include concentration and purity ratios
+- Tracks quality metrics:
+  - Concentration thresholds
+  - Human DNA contamination flags
+  - Amplicon length verification
+  - Required metadata completeness
 
-File Paths:
-/database_manager.py - Sample and measurement data persistence
-/track_submissions.py - Submission workflow and relationship tracking
-/pdf_parser.py - Form data extraction and validation
+### Sample Statistics Model
+Importance Score: 75/100
 
-Domain-Specific Features:
-- Specialized data structures for genomic sequencing workflows
-- Laboratory measurement tracking with quality thresholds
-- Project-sample relationship management
-- Submission status tracking through laboratory pipeline
+- Analyzes submission patterns:
+  - Sample concentration distributions
+  - Project-wise submission trends
+  - Quality control metric aggregation
+  - Batch validation results
 
-Overall Model Importance Score: 90/100
+Key Validation Rules:
+- Sample count limits per submission
+- Concentration range validation (112.70-468.75 ng/µL)
+- Project code format (HTSF--XX-XXX)
+- Required metadata fields for HTSF submissions
+- Duplicate sample detection across projects
+
+Relevant Files:
+- database_manager.py
+- track_submissions.py
+- sqlite_tracker.py
 
 $END$
 

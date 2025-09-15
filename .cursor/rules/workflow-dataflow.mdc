@@ -1,43 +1,53 @@
 ---
-description: Documents the end-to-end data flow for laboratory sample submissions from PDF parsing through database storage.
+description: Documents end-to-end data flow for HTSF submission processing from PDF parsing through database storage
 ---
 
 
 # workflow-dataflow
 
-## Submission Data Flow
-1. PDF Form Intake -> Parser
-- Submission forms contain HTSF-specific laboratory data
-- PDF parser extracts structured sample metadata and measurements
-- Validates domain requirements for sequencing projects
-Importance Score: 85/100
+The data workflow follows a specialized path for High-Throughput Sequencing Facility (HTSF) form processing:
 
-2. Data Processing Pipeline
-- Extracts concentration measurements (ng/µL) and quality ratios
-- Applies HTSF laboratory validation rules
-- Generates unique submission IDs: HTSF[Owner][Project]_[Date]_[Time]
-Importance Score: 80/100
+## Form Submission Flow (Importance: 90/100)
+1. PDF Form Ingestion (`pdf_parser.py`)
+   - Parses HTSF Nanopore submission forms
+   - Extracts domain-specific metadata:
+     - Sample concentrations
+     - Sequencing parameters
+     - Project identifiers
+   - Applies HTSF-specific validation rules
 
-3. Database Storage Flow
-/database_manager.py -> /sqlite_tracker.py
-- Records sample measurements and metadata
-- Tracks laboratory workflow status
-- Maintains submission history with concentration statistics
-- Implements duplicate detection using file hashing
-Importance Score: 75/100
+2. Data Validation (`api_server.py`)
+   - Validates sample metadata completeness
+   - Verifies project code format (HTSF--XX-XXX)
+   - Checks concentration thresholds
+   - Flags human DNA content
+   - Validates amplicon lengths
 
-## Data Model Relationships
-- Projects contain multiple samples with sequencing requirements
-- Samples tracked by measurements, concentrations, and purity ratios
-- Submissions linked to workflow states and project metadata
-Importance Score: 70/100
+## Storage and Tracking Flow (Importance: 85/100)
+1. Database Processing (`database_manager.py`)
+   - Generates unique submission IDs
+   - Detects duplicate submissions via file hashing
+   - Tracks sample batches
+   - Manages project-specific metadata
 
-## Laboratory Data Validation
-- Enforces concentration ranges for DNA/RNA samples
-- Validates A260/280 purity ratios
-- Ensures complete metadata for genomic sequencing
-- Applies naming conventions for laboratory submissions
-Importance Score: 82/100
+2. Submission Tracking (`sqlite_tracker.py`, `track_submissions.py`)
+   - Records submission status
+   - Maintains project-wise submission patterns
+   - Tracks quality control metrics
+   - Monitors sample concentration distributions
+
+## Key Data Transformations
+1. Sample Data Processing
+   - Concentration validation (112.70 - 468.75 ng/µL)
+   - A260/280 ratio calculations
+   - Nanodrop concentration verification
+   - Sample quality assessment
+
+2. Project Management
+   - Project code validation
+   - Sample batch organization
+   - Submission status tracking
+   - Quality metrics aggregation
 
 $END$
 

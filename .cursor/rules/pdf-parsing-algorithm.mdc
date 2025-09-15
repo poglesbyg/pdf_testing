@@ -1,53 +1,56 @@
 ---
-description: Specialized algorithm for parsing HTSF laboratory submission forms to extract and validate sequencing data
+description: Specialized PDF parsing rules and validation logic for HTSF (High-Throughput Sequencing Facility) form processing
 ---
 
 
 # pdf-parsing-algorithm
 
-## Form Extraction Patterns
-
-The PDF parser implements specialized extraction logic for HTSF (High-Throughput Sequencing Facility) submission forms:
-
-1. Sample Data Extraction
-- Concentration measurements (ng/µL)
-- A260/280 purity ratios  
-- Volume specifications
-- Sample type classification (gDNA, cDNA, PCR Amplicons)
-
-2. Project Metadata 
-- HTSF project identifiers (HTSF--XX-###)
-- Sequencing type (Ligation, Rapid, Barcoding)
-- Organism/tissue information
-
-## Validation Rules
-
-Laboratory-specific validation enforces:
-
-1. Sample Quality Requirements
-- DNA concentration ranges per sequencing type
-- Minimum purity ratio thresholds
-- Required volume validations
-
-2. Project Metadata Validation  
-- Project ID format compliance
-- Required fields for genomic processing
-- Sample naming convention checks
-
-## Business Domain Integration
-
-The parser connects to laboratory workflows by:
-
-1. Generating standardized submission IDs:
-`HTSF[Owner Initials][Project Number]_[Date]_[Time]`
-
-2. Supporting lab-specific metadata:
-- Sample classifications
-- Project references
-- Quality metrics
-
+## Form Extraction Rules
+Primary file: `pdf_parser.py`
 Importance Score: 85/100
-(Critical laboratory data extraction and validation)
+
+The HTSF form parser implements specialized extraction patterns for sequencing submission forms:
+
+1. Sample Metadata Extraction
+- Concentration values (ng/µL range: 112.70 - 468.75)
+- A260/280 ratios for quality assessment
+- Sample volumes and buffer compositions
+- Organism/tissue source information
+
+2. Sequencing Parameters
+- Nanopore flow cell requirements
+- Coverage depth specifications
+- Run time estimations based on sample complexity
+- Amplicon length validation
+
+3. Project Identification
+- HTSF--XX-XXX format validation
+- Cross-reference with existing projects
+- Batch submission grouping rules
+
+## Validation Framework
+- Human DNA content detection and flagging
+- Concentration threshold enforcement
+- Required metadata completeness checks
+- Sample quality metrics validation:
+  * Minimum concentration thresholds
+  * Acceptable A260/280 ratio ranges
+  * Volume adequacy checks
+
+## Domain-Specific Rules
+- Automated flagging of samples outside accepted ranges
+- Cross-validation of related sample parameters
+- Project-specific validation rules based on submission type
+- Custom duplicate detection incorporating:
+  * Sample metadata comparison
+  * Project code validation
+  * Timestamp-based submission rules
+
+## Quality Control Integration
+- Sample concentration distribution analysis
+- Automated outlier detection
+- Quality metric tracking per project
+- Validation against historical submission patterns
 
 $END$
 

@@ -10,36 +10,36 @@
 - Explain your OBSERVATIONS clearly, then provide REASONING to identify the exact issue. Add console logs when needed to gather more information.
 
 
-HTSF Laboratory Submission Processing System organizes DNA/RNA sequencing workflows through specialized form processing and sample tracking.
+The system processes and validates specialized HTSF Nanopore submission forms through three core business components:
 
-Core System Components:
+## PDF Form Processing Engine
+*Importance Score: 85/100*
 
-## PDF Form Processing (/pdf_parser.py)
-Handles specialized HTSF submission forms for laboratory samples:
-- Extracts sequencing specifications and project metadata
-- Validates DNA/RNA sample concentrations and ratios
-- Processes multiple sequencing types (Ligation, Rapid, Barcoding)
-- Enforces laboratory naming conventions
-Importance Score: 85/100
+Located in `pdf_parser.py`, this component handles specialized HTSF form parsing:
+- Extracts domain-specific sample metadata (concentrations, ratios, volumes)
+- Processes sequencing parameters and flow cell requirements
+- Validates human DNA content and amplicon lengths
+- Enforces sample quality metrics through A260/280 ratios
 
-## Sample Database Management (/database_manager.py)
-Manages laboratory workflow tracking:
-- Implements duplicate detection via file hashing
-- Records sample measurements including Nanodrop concentrations
-- Tracks A260/280 ratios and volume measurements
-- Maintains project relationships and submission history
-Importance Score: 75/100
+## Submission Management
+*Importance Score: 75/100*
 
-## Laboratory Rules
-Sample Processing Requirements:
-- Sample type classification (gDNA, Fragmented DNA, PCR Amplicons, cDNA)
-- Concentration validation for sequencing viability
-- Project ID format validation (HTSF--XX-###)
-- Submission ID generation: HTSF[Owner Initials][Project Number]_[Date]_[Time]
+Implemented in `database_manager.py`, manages submission workflows:
+- Generates unique HTSF submission IDs (format: HTSF{ProjectCode}_{Date}_{Time})
+- Tracks sample batches and project-specific metadata
+- Maintains concentration distributions and QC metrics
+- Detects duplicate submissions using file content analysis
 
-The system serves as a specialized laboratory information management platform focused on DNA/RNA sequencing submissions with specific validation rules and tracking requirements for the High-Throughput Sequencing Facility.
+## Validation Framework
+*Importance Score: 65/100*
 
-Overall System Importance: 80/100
+Located in `api_server.py`, enforces HTSF-specific rules:
+- Validates project codes against HTSF--XX-XXX format
+- Enforces sample concentration thresholds
+- Checks required metadata completeness
+- Implements specialized duplicate detection incorporating metadata comparison
+
+Business value centers on specialized processing of HTSF submission forms and domain-specific validation rules for genomic sequencing projects, with particular focus on Nanopore sequencing requirements and quality control.
 
 $END$
 
