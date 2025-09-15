@@ -20,8 +20,12 @@ RUN pip install --no-cache-dir uv && \
 COPY *.py ./
 COPY pdf_parser.py database_manager.py api_server.py ./
 
-# Create directory for database
-RUN mkdir -p /app/data
+# Create directory for database and cache
+RUN mkdir -p /app/data /tmp/.cache && \
+    chmod -R 777 /app/data /tmp/.cache
+
+# Run as non-root user (OpenShift will assign one)
+USER 1001
 
 # Expose port
 EXPOSE 8000
@@ -29,6 +33,8 @@ EXPOSE 8000
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV DATABASE_PATH=/app/data/submissions.db
+ENV UV_CACHE_DIR=/tmp/.cache/uv
+ENV UV_NO_CACHE=1
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
