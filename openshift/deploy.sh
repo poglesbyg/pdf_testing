@@ -2,8 +2,12 @@
 
 # OpenShift Deployment Script for PDF Tracker
 
-PROJECT_NAME="pdf-tracker"
-GIT_REPO="https://github.com/your-username/pdf-tracker.git"
+# Use the available project or allow override
+PROJECT_NAME="${OPENSHIFT_PROJECT:-dept-barc}"
+GIT_REPO="https://github.com/poglesbyg/pdf_testing.git"
+
+# Get the directory where the script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Colors for output
 RED='\033[0;31m'
@@ -22,21 +26,21 @@ if ! oc whoami &> /dev/null; then
     exit 1
 fi
 
-# Create new project or switch to existing
-echo -e "\n${YELLOW}Creating/switching to project ${PROJECT_NAME}...${NC}"
-oc new-project ${PROJECT_NAME} 2>/dev/null || oc project ${PROJECT_NAME}
+# Switch to the available project
+echo -e "\n${YELLOW}Using project ${PROJECT_NAME}...${NC}"
+oc project ${PROJECT_NAME}
 
 # Apply build configurations
 echo -e "\n${YELLOW}Creating build configurations...${NC}"
-oc apply -f build-config.yaml
+oc apply -f "${SCRIPT_DIR}/build-config.yaml"
 
 # Apply backend deployment
 echo -e "\n${YELLOW}Deploying backend...${NC}"
-oc apply -f backend-deployment.yaml
+oc apply -f "${SCRIPT_DIR}/backend-deployment.yaml"
 
 # Apply frontend deployment
 echo -e "\n${YELLOW}Deploying frontend...${NC}"
-oc apply -f frontend-deployment.yaml
+oc apply -f "${SCRIPT_DIR}/frontend-deployment.yaml"
 
 # Start builds
 echo -e "\n${YELLOW}Starting builds...${NC}"
@@ -49,7 +53,7 @@ oc rollout status deployment/pdf-tracker-backend
 oc rollout status deployment/pdf-tracker-frontend
 
 # Get route
-ROUTE=$(oc get route pdf-tracker -o jsonpath='{.spec.host}')
+ROUTE=$(oc get route pdf-tracker-htsf -o jsonpath='{.spec.host}' 2>/dev/null || echo "Route not found")
 
 echo -e "\n${GREEN}========================================${NC}"
 echo -e "${GREEN}Deployment Complete!${NC}"

@@ -347,4 +347,4 @@ if __name__ == "__main__":
     print("Starting PDF Submission Tracker API...")
     print("API Documentation: http://localhost:8000/docs")
     print("Alternative docs: http://localhost:8000/redoc")
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("api_server:app", host="0.0.0.0", port=8000, reload=True)

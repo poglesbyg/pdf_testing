@@ -66,7 +66,7 @@ spec:
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: pdf-tracker
+  name: pdf-tracker-htsf
   labels:
     app: pdf-tracker
 spec:
