@@ -1,0 +1,71 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: pdf-tracker-backend-build
+  labels:
+    app: pdf-tracker
+    component: backend
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/your-username/pdf-tracker.git
+      ref: main
+    contextDir: /
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: backend.Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: pdf-tracker-backend:latest
+  triggers:
+  - type: ConfigChange
+  - type: GitHub
+    github:
+      secret: pdf-tracker-webhook-secret
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: pdf-tracker-frontend-build
+  labels:
+    app: pdf-tracker
+    component: frontend
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/your-username/pdf-tracker.git
+      ref: main
+    contextDir: /
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: frontend.Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: pdf-tracker-frontend:latest
+  triggers:
+  - type: ConfigChange
+  - type: GitHub
+    github:
+      secret: pdf-tracker-webhook-secret
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: pdf-tracker-backend
+  labels:
+    app: pdf-tracker
+    component: backend
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: pdf-tracker-frontend
+  labels:
+    app: pdf-tracker
+    component: frontend

@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pdf-tracker-backend
+  labels:
+    app: pdf-tracker
+    component: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pdf-tracker
+      component: backend
+  template:
+    metadata:
+      labels:
+        app: pdf-tracker
+        component: backend
+    spec:
+      containers:
+      - name: backend
+        image: pdf-tracker-backend:latest
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        env:
+        - name: DATABASE_PATH
+          value: /app/data/submissions.db
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: pdf-tracker-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pdf-tracker-backend
+  labels:
+    app: pdf-tracker
+    component: backend
+spec:
+  selector:
+    app: pdf-tracker
+    component: backend
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+  type: ClusterIP
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pdf-tracker-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

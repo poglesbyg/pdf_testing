@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    container_name: pdf-tracker-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./submissions.db:/app/data/submissions.db
+    environment:
+      - DATABASE_PATH=/app/data/submissions.db
+      - PYTHONUNBUFFERED=1
+    networks:
+      - pdf-tracker-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    container_name: pdf-tracker-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://backend:8000
+    networks:
+      - pdf-tracker-network
+    restart: unless-stopped
+
+networks:
+  pdf-tracker-network:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local
