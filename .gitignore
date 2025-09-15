@@ -22,16 +22,35 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # Virtual environments
 .venv/
 venv/
 ENV/
 env/
+.Python
 
 # uv
 .uv/
 uv.lock.bak
+.python-version
+
+# Node.js / Frontend
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+frontend/node_modules/
+frontend/build/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
 
 # IDEs
 .vscode/
@@ -40,18 +59,24 @@ uv.lock.bak
 *.swo
 *~
 .DS_Store
+*.sublime-project
+*.sublime-workspace
 
-# Project specific
+# Project specific databases and exports
 *.db
 *.db-journal
-submissions.db
+*.db-shm
+*.db-wal
+submissions.db*
 submission_database.json
 submissions_export.json
 parsed_form_data.json
+data/
 
 # Logs
 *.log
 logs/
+*.log.*
 
 # Testing
 .pytest_cache/
@@ -59,18 +84,25 @@ logs/
 htmlcov/
 .tox/
 .hypothesis/
+coverage.xml
+*.cover
+.cache
+nosetests.xml
 
-# API
-__pycache__/
+# Environment variables
 .env
 .env.local
 .env.*.local
+.env.development
+.env.test
+.env.production
 
 # Temporary files
 *.tmp
 *.temp
 *.bak
 .~*
+*~
 
 # PDF test files (uncomment if you don't want to track PDFs)
 # *.pdf
@@ -78,11 +110,28 @@ __pycache__/
 # Export files
 export_*.json
 submissions_export_*.json
+*_export.json
 
 # OS files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# FastAPI
-.vercel
-.now
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# OpenShift local files
+openshift/*.local.yaml
+openshift/secrets/
+
+# Backup files
+*.backup
+*.old
+backup/
