@@ -20,9 +20,10 @@ RUN pip install --no-cache-dir uv && \
 COPY *.py ./
 COPY pdf_parser.py database_manager.py api_server.py ./
 
-# Create directory for database and cache
+# Create directory for database and cache, and fix permissions
 RUN mkdir -p /app/data /tmp/.cache && \
-    chmod -R 777 /app/data /tmp/.cache
+    chmod -R 777 /app/data /tmp/.cache && \
+    chmod -R 755 /app/.venv
 
 # Run as non-root user (OpenShift will assign one)
 USER 1001
@@ -40,5 +41,5 @@ ENV UV_NO_CACHE=1
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD python -c "import requests; requests.get('http://localhost:8000/health')" || exit 1
 
-# Run the application
-CMD ["uv", "run", "uvicorn", "api_server:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application directly with venv Python
+CMD ["/app/.venv/bin/python", "-m", "uvicorn", "api_server:app", "--host", "0.0.0.0", "--port", "8000"]
