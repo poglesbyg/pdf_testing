@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir uv && \
 
 # Copy application code
 COPY *.py ./
-COPY pdf_parser.py database_manager.py api_server.py ./
+COPY pdf_parser.py database_manager.py database_manager_optimized.py api_server.py ./
 
 # Create directory for database and cache, and fix permissions for OpenShift
 RUN mkdir -p /app/data /tmp/.cache && \
