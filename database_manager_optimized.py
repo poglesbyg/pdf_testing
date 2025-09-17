@@ -256,10 +256,10 @@ class OptimizedSubmissionDatabase:
         """Get a submission by various identifiers"""
         cursor = self.conn.cursor()
         
+        # Use only columns that exist in the current database schema
         query = """
             SELECT submission_id, uuid, short_ref, file_hash, project_id, owner,
-                   source_organism, location, total_samples, sample_type,
-                   flowcell_type, kit_type, indexed, concentration_range,
+                   source_organism, location, total_samples, 
                    scanned_at, pdf_filename
             FROM submissions 
             WHERE 
