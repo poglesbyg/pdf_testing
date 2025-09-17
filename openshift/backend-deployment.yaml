@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: pdf-tracker-backend:latest
+        image: image-registry.openshift-image-registry.svc:5000/dept-barc/pdf-tracker-backend:latest
         ports:
         - containerPort: 8000
           protocol: TCP

@@ -20,10 +20,15 @@ RUN pip install --no-cache-dir uv && \
 COPY *.py ./
 COPY pdf_parser.py database_manager.py api_server.py ./
 
-# Create directory for database and cache, and fix permissions
+# Create directory for database and cache, and fix permissions for OpenShift
 RUN mkdir -p /app/data /tmp/.cache && \
     chmod -R 777 /app/data /tmp/.cache && \
-    chmod -R 755 /app/.venv
+    chmod -R 755 /app/.venv && \
+    # Make Python executable by any user
+    chmod -R a+rx /app/.venv/bin && \
+    # Support arbitrary user IDs (OpenShift requirement)
+    chgrp -R 0 /app && \
+    chmod -R g=u /app
 
 # Run as non-root user (OpenShift will assign one)
 USER 1001
