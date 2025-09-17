@@ -179,14 +179,13 @@ class OptimizedSubmissionDatabase:
         with self.transaction() as conn:
             cursor = conn.cursor()
             
-            # Store main submission
+            # Store main submission - use only existing columns
             cursor.execute("""
                 INSERT INTO submissions (
                     submission_id, uuid, short_ref, file_hash, project_id, owner,
-                    source_organism, location, total_samples, sample_type,
-                    flowcell_type, kit_type, indexed, concentration_range,
+                    source_organism, location, total_samples,
                     scanned_at, pdf_filename, pdf_data, parsed_data
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 submission_data['submission_id'],
                 submission_data['uuid'],
@@ -197,11 +196,6 @@ class OptimizedSubmissionDatabase:
                 submission_data.get('source_organism'),
                 submission_data.get('location'),
                 submission_data.get('total_samples', 0),
-                submission_data.get('sample_type'),
-                submission_data.get('flowcell_type'),
-                submission_data.get('kit_type'),
-                submission_data.get('indexed', False),
-                submission_data.get('concentration_range'),
                 submission_data['scanned_at'],
                 submission_data['pdf_filename'],
                 file_content,
