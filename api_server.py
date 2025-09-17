@@ -88,9 +88,9 @@ class Statistics(BaseModel):
     total_submissions: int
     total_samples: int
     unique_projects: int
-    by_project: List[Dict[str, Any]]
-    recent_submissions: List[Dict[str, Any]]
-    concentration_stats: Dict[str, Any]
+    unique_owners: Optional[int] = 0
+    recent_submissions: int
+    top_projects: Optional[List[Dict[str, Any]]] = []
 
 class SearchResult(BaseModel):
     """Search result model"""
