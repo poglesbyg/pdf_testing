@@ -109,6 +109,31 @@ async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
 
+@app.get("/api/db-test", tags=["General"])
+async def database_test():
+    """Test database connectivity and status"""
+    try:
+        db.connect()
+        cursor = db.conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM submissions")
+        count = cursor.fetchone()[0]
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = [row[0] for row in cursor.fetchall()]
+        db.close()
+        return {
+            "database_path": db.db_path,
+            "database_exists": os.path.exists(db.db_path),
+            "tables": tables,
+            "submission_count": count,
+            "status": "connected"
+        }
+    except Exception as e:
+        return {
+            "database_path": db.db_path,
+            "error": str(e),
+            "status": "error"
+        }
+
 @app.post("/api/process", response_model=ProcessResult, tags=["Processing"])
 async def process_pdf(
     file: UploadFile = File(..., description="PDF file to process"),
