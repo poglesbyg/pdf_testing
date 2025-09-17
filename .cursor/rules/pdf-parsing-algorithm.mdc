@@ -1,56 +1,60 @@
 ---
-description: Specialized PDF parsing rules and validation logic for HTSF (High-Throughput Sequencing Facility) form processing
+description: Documentation of specialized PDF parsing algorithm for extracting and validating HTSF Nanopore submission form data
 ---
 
 
 # pdf-parsing-algorithm
 
-## Form Extraction Rules
-Primary file: `pdf_parser.py`
-Importance Score: 85/100
+The HTSF form parsing algorithm implements specialized extraction and validation rules:
 
-The HTSF form parser implements specialized extraction patterns for sequencing submission forms:
+1. Metadata Extraction (Score: 85)
+- Located in: `/pdf_parser.py`
+- Extracts key fields from standardized form locations:
+  - Project ID and timestamp for submission tracking
+  - Owner information and contact details
+  - Sample type classifications
+  - Sequencing parameters and requirements
 
-1. Sample Metadata Extraction
-- Concentration values (ng/µL range: 112.70 - 468.75)
-- A260/280 ratios for quality assessment
-- Sample volumes and buffer compositions
-- Organism/tissue source information
+2. Sample Table Processing (Score: 90) 
+- Located in: `/pdf_parser.py`
+- Parses complex multi-row sample tables containing:
+  - Sample identifiers
+  - Concentration measurements
+  - Buffer compositions
+  - Quality metrics
+- Validates data against required thresholds
 
-2. Sequencing Parameters
-- Nanopore flow cell requirements
-- Coverage depth specifications
-- Run time estimations based on sample complexity
-- Amplicon length validation
+3. Form Version Detection (Score: 75)
+- Located in: `/pdf_parser.py`
+- Identifies HTSF form version from structural markers
+- Adapts extraction patterns based on form layout
+- Maintains backward compatibility with legacy formats
 
-3. Project Identification
-- HTSF--XX-XXX format validation
-- Cross-reference with existing projects
-- Batch submission grouping rules
+4. Data Validation Rules (Score: 80)
+- Located in: `/pdf_parser.py`
+- Enforces domain-specific constraints:
+  - Required concentration ranges
+  - Valid buffer compositions
+  - Sample naming conventions
+  - Project ID formatting
 
-## Validation Framework
-- Human DNA content detection and flagging
-- Concentration threshold enforcement
-- Required metadata completeness checks
-- Sample quality metrics validation:
-  * Minimum concentration thresholds
-  * Acceptable A260/280 ratio ranges
-  * Volume adequacy checks
+5. Laboratory Data Processing (Score: 85)
+- Located in: `/pdf_parser.py`, `/database_manager.py`
+- Extracts specialized laboratory measurements:
+  - DNA/RNA quality scores
+  - Purity ratios
+  - Contaminant levels
+- Maps values to standardized units
 
-## Domain-Specific Rules
-- Automated flagging of samples outside accepted ranges
-- Cross-validation of related sample parameters
-- Project-specific validation rules based on submission type
-- Custom duplicate detection incorporating:
-  * Sample metadata comparison
-  * Project code validation
-  * Timestamp-based submission rules
+6. Error Recovery (Score: 70)
+- Located in: `/pdf_parser.py`
+- Handles common form completion errors:
+  - Missing optional fields
+  - Malformed measurements
+  - Inconsistent formatting
+- Generates warning flags for manual review
 
-## Quality Control Integration
-- Sample concentration distribution analysis
-- Automated outlier detection
-- Quality metric tracking per project
-- Validation against historical submission patterns
+The parser maintains strict validation while accommodating variations in form completion patterns commonly seen in laboratory environments. The extraction rules are optimized for the specific structure and content requirements of HTSF Nanopore submission forms.
 
 $END$
 

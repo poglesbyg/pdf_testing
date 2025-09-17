@@ -1,59 +1,65 @@
 ---
-description: Specification for lab submission data models including sample metadata, concentration measurements, and project relationships
+description: Defines data models and structures for managing laboratory submission data, samples, and measurements
 ---
 
 
 # data-models-lab-submissions
 
-## Core Data Models
+Core data modeling components for laboratory submissions:
 
-### Sample Submission Model
-Importance Score: 95/100
+### Sample Metadata Storage
+**File Path:** `/database_manager.py`
+**Importance Score:** 95
+- Manages structured metadata for laboratory samples including:
+  - Project identifiers
+  - Source organism details
+  - Buffer composition
+  - Sample preparation methods
+  - Concentration measurements
+  - Quality metrics
 
-- Sample metadata tracking:
-  - Concentration measurements (ng/µL) with validation ranges 112.70-468.75
-  - Quality ratios (A260/280)
-  - Volume requirements
-  - Project identifiers in HTSF--XX-XXX format
+### Submission Tracking Models
+**File Path:** `/track_submissions.py`
+**Importance Score:** 90
+- Tracks complete submission lifecycle:
+  - Unique submission identifiers
+  - Project associations
+  - Sample groupings
+  - Processing status
+  - Timestamp tracking
+  - Location information
+  - Quality control flags
 
-### Project Relationship Model 
-Importance Score: 85/100
+### Concentration Data Models
+**File Path:** `/sqlite_tracker.py`
+**Importance Score:** 85
+- Specialized structures for concentration measurements:
+  - Raw concentration values
+  - Normalized measurements
+  - Dilution factors
+  - Quality ratios
+  - Statistical aggregates
+  - Historical tracking
 
-- Links submissions to projects:
-  - Unique submission ID generation (HTSFJL147_20250910_113759)
-  - Project code validation
-  - Sample batch associations
-  - Cross-project sample tracking
+### Project Relationship Models
+**File Path:** `/database_manager.py`
+**Importance Score:** 80
+- Models hierarchical relationships between:
+  - Projects
+  - Submissions
+  - Sample batches
+  - Individual measurements
+  - Analysis results
 
-### Quality Control Model
-Importance Score: 80/100
-
-- Tracks quality metrics:
-  - Concentration thresholds
-  - Human DNA contamination flags
-  - Amplicon length verification
-  - Required metadata completeness
-
-### Sample Statistics Model
-Importance Score: 75/100
-
-- Analyzes submission patterns:
-  - Sample concentration distributions
-  - Project-wise submission trends
-  - Quality control metric aggregation
-  - Batch validation results
-
-Key Validation Rules:
-- Sample count limits per submission
-- Concentration range validation (112.70-468.75 ng/µL)
-- Project code format (HTSF--XX-XXX)
-- Required metadata fields for HTSF submissions
-- Duplicate sample detection across projects
-
-Relevant Files:
-- database_manager.py
-- track_submissions.py
-- sqlite_tracker.py
+### Validation Rules
+**File Path:** `/pdf_parser.py`
+**Importance Score:** 75
+- Domain-specific validation for:
+  - Concentration ranges
+  - Sample naming conventions
+  - Required metadata fields
+  - Project identifier formats
+  - Quality threshold checks
 
 $END$
 

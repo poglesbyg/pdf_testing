@@ -10,36 +10,44 @@
 - Explain your OBSERVATIONS clearly, then provide REASONING to identify the exact issue. Add console logs when needed to gather more information.
 
 
-The system processes and validates specialized HTSF Nanopore submission forms through three core business components:
+The system implements a specialized workflow for processing HTSF Nanopore submission forms with these core components:
 
-## PDF Form Processing Engine
-*Importance Score: 85/100*
+### PDF Processing Pipeline (Score: 90)
+- Extracts structured data from HTSF Nanopore submission forms
+- Generates multiple unique identifiers per submission (UUID, short UUID, timestamp-based ID)
+- Parses domain-specific metadata: project IDs, owner info, sample types, sequencing details
+- Validates and structures sample information including concentrations and ratios
 
-Located in `pdf_parser.py`, this component handles specialized HTSF form parsing:
-- Extracts domain-specific sample metadata (concentrations, ratios, volumes)
-- Processes sequencing parameters and flow cell requirements
-- Validates human DNA content and amplicon lengths
-- Enforces sample quality metrics through A260/280 ratios
+### Submission Management System (Score: 85)
+- Implements multi-layered duplicate detection using SHA256 file hashes
+- Tracks submissions through a normalized SQLite database schema
+- Manages domain-specific fields for nanopore sequencing workflows
+- Provides comprehensive submission statistics and analytics
 
-## Submission Management
-*Importance Score: 75/100*
+### Data Extraction Engine (Score: 80)
+- Specialized parsing for nanopore sequencing metadata
+- Extracts and validates sample tables with concentration metrics
+- Processes project-specific parameters and buffer types
+- Generates structured outputs for database storage
 
-Implemented in `database_manager.py`, manages submission workflows:
-- Generates unique HTSF submission IDs (format: HTSF{ProjectCode}_{Date}_{Time})
-- Tracks sample batches and project-specific metadata
-- Maintains concentration distributions and QC metrics
-- Detects duplicate submissions using file content analysis
+### Search and Retrieval System (Score: 75)
+- Full-text search across submission metadata
+- Project and owner-based filtering capabilities
+- Sample-level detail retrieval
+- Export functionality for submission data
 
-## Validation Framework
-*Importance Score: 65/100*
+### Frontend Workflows (Score: 70)
+- Specialized upload interface for PDF submissions
+- Real-time duplicate detection feedback
+- Interactive submission management dashboard
+- Visualization of submission statistics and trends
 
-Located in `api_server.py`, enforces HTSF-specific rules:
-- Validates project codes against HTSF--XX-XXX format
-- Enforces sample concentration thresholds
-- Checks required metadata completeness
-- Implements specialized duplicate detection incorporating metadata comparison
-
-Business value centers on specialized processing of HTSF submission forms and domain-specific validation rules for genomic sequencing projects, with particular focus on Nanopore sequencing requirements and quality control.
+Core business flows are organized around:
+1. PDF intake and validation
+2. Metadata extraction and structuring
+3. Duplicate detection and tracking
+4. Sample data management
+5. Statistical analysis and reporting
 
 $END$
 

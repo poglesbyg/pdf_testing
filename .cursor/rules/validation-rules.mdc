@@ -1,61 +1,65 @@
 ---
-description: Defines domain-specific validation rules for DNA/RNA sample processing in high-throughput sequencing workflows
+description: Defines validation rules for DNA/RNA sample data, concentration ranges, and naming conventions in a laboratory context
 ---
 
 
 # validation-rules
 
-Key validation rules for HTSF (High-Throughput Sequencing Facility) sample processing:
+### Sample Data Validation Rules
 
-## Sample Concentration Validation
-Importance Score: 95/100
+1. **DNA/RNA Sample Concentration Validation**
+- Enforces acceptable concentration ranges for nanopore sequencing samples
+- Validates concentration ratios and minimum thresholds
+- Verifies sample volume requirements
+**Importance Score**: 95
 
-- Valid concentration range: 112.70 - 468.75 ng/µL
-- Automated flagging system for out-of-range samples
-- Statistical analysis for quality control thresholds
+2. **Project ID Format Validation**
+- Enforces HTSF-specific project ID format standards
+- Validates required prefix patterns and numbering sequences
+- Ensures uniqueness across submissions
+**Importance Score**: 85
 
-## Project Identifier Rules
-Importance Score: 85/100
+3. **Sample Naming Convention Enforcement**
+- Validates laboratory-specific naming patterns
+- Enforces character limitations and required fields
+- Checks for prohibited special characters
+**Importance Score**: 80
 
-Format requirements:
-- Pattern: HTSF--XX-XXX
-- Submission ID format: HTSF{ProjectCode}_{Date}_{Time}
-- Example: HTSFJL147_20250910_113759
+4. **Sample Type Classification**
+- Validates sample types against approved list
+- Enforces specific requirements per sample category
+- Ensures compatibility with sequencing protocols
+**Importance Score**: 85
 
-## Metadata Validation
-Importance Score: 90/100
+5. **Buffer Compatibility Validation**
+- Validates buffer types against approved list
+- Ensures compatibility with nanopore sequencing
+- Checks concentration requirements per buffer type
+**Importance Score**: 75
 
-Required fields:
-- Sample concentration measurements (ng/µL)
-- A260/280 ratios
-- Organism and tissue information
-- Sequencing parameters
-- Flow cell requirements
+6. **Owner Information Validation**
+- Validates required contact information fields
+- Ensures institutional affiliation formatting
+- Verifies authorized submission sources
+**Importance Score**: 70
 
-## Quality Control Metrics
-Importance Score: 88/100
+7. **Metadata Field Requirements**
+- Enforces required fields for sequencing parameters
+- Validates experiment-specific configurations
+- Ensures complete submission documentation
+**Importance Score**: 80
 
-Automated validation for:
-- Human DNA content presence
-- Amplicon length verification
-- Nanodrop concentration measurements
-- Sample batch consistency
-- Project-specific sample count limits
+8. **Sample Count Validation**
+- Enforces minimum/maximum sample limits
+- Validates batch size requirements
+- Ensures balanced sample distribution
+**Importance Score**: 75
 
-## Duplicate Detection
-Importance Score: 75/100
-
-Validation against:
-- File content hashing
-- Project ID matching
-- Sample count verification
-- Concentration data comparison
-- Timestamp-based validation
-
-Implemented in:
-- pdf_parser.py
-- api_server.py
-- database_manager.py
+Key Implementation Files:
+- `/pdf_parser.py`: Primary validation logic implementation
+- `/database_manager.py`: Validation state persistence
+- `/api_server.py`: API-level validation enforcement
+- `frontend/src/pages/Upload.js`: Client-side validation checks
 
 $END$
 

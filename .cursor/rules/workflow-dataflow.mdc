@@ -1,53 +1,55 @@
 ---
-description: Documents end-to-end data flow for HTSF submission processing from PDF parsing through database storage
+description: Documentation of data flow through PDF submission processing pipeline including parsing, storage, and tracking
 ---
 
 
 # workflow-dataflow
 
-The data workflow follows a specialized path for High-Throughput Sequencing Facility (HTSF) form processing:
+The data flow follows a sequential pipeline for processing HTSF Nanopore submissions:
 
-## Form Submission Flow (Importance: 90/100)
-1. PDF Form Ingestion (`pdf_parser.py`)
-   - Parses HTSF Nanopore submission forms
-   - Extracts domain-specific metadata:
-     - Sample concentrations
-     - Sequencing parameters
-     - Project identifiers
-   - Applies HTSF-specific validation rules
+### 1. PDF Submission Entry (Score: 90)
+- PDF forms enter through either frontend upload (`Upload.js`) or API endpoint (`api_server.py`)
+- Forms contain project metadata, owner info, sample details and sequencing parameters
+- Initial validation ensures PDF format and completeness
 
-2. Data Validation (`api_server.py`)
-   - Validates sample metadata completeness
-   - Verifies project code format (HTSF--XX-XXX)
-   - Checks concentration thresholds
-   - Flags human DNA content
-   - Validates amplicon lengths
+### 2. PDF Parsing and Data Extraction (Score: 85) 
+`pdf_parser.py`:
+- Extracts structured data from submission forms
+- Parses sample tables, metadata, project IDs
+- Generates submission identifiers:
+  - UUID for unique tracking
+  - Short reference ID for user reference
+  - File hash for deduplication
+  - Timestamp for chronological tracking
 
-## Storage and Tracking Flow (Importance: 85/100)
-1. Database Processing (`database_manager.py`)
-   - Generates unique submission IDs
-   - Detects duplicate submissions via file hashing
-   - Tracks sample batches
-   - Manages project-specific metadata
+### 3. Duplicate Detection (Score: 80)
+`database_manager.py`, `sqlite_tracker.py`:
+- Calculates SHA256 hash of incoming PDF
+- Checks hash against existing submissions
+- Prevents duplicate processing
+- Returns existing submission ID if duplicate found
 
-2. Submission Tracking (`sqlite_tracker.py`, `track_submissions.py`)
-   - Records submission status
-   - Maintains project-wise submission patterns
-   - Tracks quality control metrics
-   - Monitors sample concentration distributions
+### 4. Database Storage (Score: 85)
+`database_manager.py`:
+- Stores parsed data in normalized SQLite tables:
+  - submissions: Core submission metadata
+  - samples: Individual sample details
+  - tracking_info: Processing status and timestamps
+- Handles automatic schema migration for new fields
 
-## Key Data Transformations
-1. Sample Data Processing
-   - Concentration validation (112.70 - 468.75 ng/µL)
-   - A260/280 ratio calculations
-   - Nanodrop concentration verification
-   - Sample quality assessment
+### 5. Status Tracking (Score: 75)
+`track_submissions.py`:
+- Records submission processing status
+- Tracks timestamps for key pipeline stages
+- Maintains audit trail of submissions
+- Updates processing status in real-time
 
-2. Project Management
-   - Project code validation
-   - Sample batch organization
-   - Submission status tracking
-   - Quality metrics aggregation
+### 6. Data Access Flow (Score: 70)
+- Frontend queries submission data through API endpoints
+- Search functionality across all submission fields
+- Detailed views of individual submissions
+- Export capabilities for further analysis
+- Statistics generation for monitoring
 
 $END$
 
