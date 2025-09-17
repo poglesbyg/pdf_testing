@@ -30,14 +30,14 @@ RUN mkdir -p /var/cache/nginx/client_temp \
 RUN chgrp -R 0 /var/cache/nginx /var/run /var/log/nginx /usr/share/nginx/html && \
     chmod -R g=u /var/cache/nginx /var/run /var/log/nginx /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Expose port 8080 (OpenShift doesn't allow privileged ports < 1024)
+EXPOSE 8080
 
 # Switch to non-root user (OpenShift will override this with a random UID)
 USER 1001
 
-# Health check
+# Health check - update to use port 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost || exit 1
+    CMD wget --quiet --tries=1 --spider http://localhost:8080 || exit 1
 
 CMD ["nginx", "-g", "daemon off;"]
