@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  backend:
+  pdf-tracker-backend:
     build:
       context: .
       dockerfile: backend.Dockerfile
@@ -26,9 +26,9 @@ services:
     ports:
       - "3000:80"
     depends_on:
-      - backend
+      - pdf-tracker-backend
     environment:
-      - REACT_APP_API_URL=http://backend:8000
+      - REACT_APP_API_URL=http://pdf-tracker-backend:8000
     networks:
       - pdf-tracker-network
     restart: unless-stopped
