@@ -351,17 +351,29 @@ async def update_submission(
     if not update_dict:
         return {"message": "No updates provided", "success": False}
     
-    success = db.update_submission(submission_id, update_dict)
-    
-    if success:
-        return {
-            "message": "Submission updated successfully",
-            "success": True,
-            "submission_id": submission_id,
-            "updated_fields": list(update_dict.keys())
-        }
-    else:
-        return {"message": "Update failed", "success": False}
+    try:
+        success = db.update_submission(submission_id, update_dict)
+        
+        if success:
+            return {
+                "message": "Submission updated successfully",
+                "success": True,
+                "submission_id": submission_id,
+                "updated_fields": list(update_dict.keys())
+            }
+        else:
+            return {"message": "Update failed", "success": False}
+    except Exception as e:
+        import traceback
+        print(f"ERROR: Update failed for submission {submission_id}")
+        print(f"Update dict: {update_dict}")
+        print(f"Error: {str(e)}")
+        traceback.print_exc()
+        # Return error details for debugging
+        raise HTTPException(
+            status_code=500, 
+            detail={"error": "Internal server error", "details": str(e)}
+        )
 
 @app.delete("/api/submissions/{submission_id}", tags=["Submissions"])
 async def delete_submission(
