@@ -52,7 +52,8 @@ spec:
           periodSeconds: 5
       volumes:
       - name: data-volume
-        emptyDir: {}
+        persistentVolumeClaim:
+          claimName: pdf-tracker-backend-data
 ---
 apiVersion: v1
 kind: Service
