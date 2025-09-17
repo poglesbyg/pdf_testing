@@ -35,8 +35,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Database instance
-db = SubmissionDatabase()
+# Database instance - use DATABASE_PATH environment variable if set
+db_path = os.getenv('DATABASE_PATH', 'submissions.db')
+print(f"Initializing database at: {db_path}")
+db = SubmissionDatabase(db_path)
+
+# Ensure database directory exists
+os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
 
 # Pydantic models for request/response validation
 class SubmissionResponse(BaseModel):
