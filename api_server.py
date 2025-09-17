@@ -15,7 +15,14 @@ import tempfile
 import json
 
 from pdf_parser import HTSFFormParser
-from database_manager import SubmissionDatabase
+
+# Try to import optimized database manager, fall back to original if not available
+try:
+    from database_manager_optimized import OptimizedSubmissionDatabase as SubmissionDatabase
+    print("Using optimized database manager with connection pooling")
+except ImportError:
+    from database_manager import SubmissionDatabase
+    print("Using standard database manager")
 
 # Create FastAPI app
 app = FastAPI(
@@ -43,6 +50,15 @@ os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
 
 print(f"Initializing database at: {db_path}")
 db = SubmissionDatabase(db_path)
+
+# Register cleanup on shutdown
+import atexit
+def cleanup():
+    if hasattr(db, 'close_all'):
+        db.close_all()
+    else:
+        db.close()
+atexit.register(cleanup)
 
 # Pydantic models for request/response validation
 class SubmissionResponse(BaseModel):
